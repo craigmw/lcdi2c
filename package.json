@@ -1,0 +1,32 @@
+{
+  "name": "lcdi2c",
+  "version": "1.0.3",
+  "description": "I2C LCD character display driver for Raspberry Pi using PCF8574 port expander.",
+  "main": "index.js",
+  "dependencies": {
+    "i2c-bus": "^1.0.2",
+    "sleep": "^3.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigmw/lcdi2c.git"
+  },
+  "keywords": [
+    "LCD",
+    "I2C",
+    "Raspberry",
+    "Pi",
+    "PCF8574",
+    "i2c-bus"
+  ],
+  "author": "craigmw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/craigmw/lcdi2c/issues"
+  },
+  "homepage": "https://github.com/craigmw/lcdi2c#readme"
+}
