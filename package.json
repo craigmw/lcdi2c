@@ -1,6 +1,6 @@
 {
   "name": "lcdi2c",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "I2C LCD character display driver for Raspberry Pi using PCF8574 port expander.",
   "main": "index.js",
   "dependencies": {

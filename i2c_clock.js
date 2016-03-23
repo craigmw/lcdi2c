@@ -1,4 +1,5 @@
-//i2c_clock.js - Tests i2c lcd display clock function.
+//i2c_clock.js - Tests i2c lcd display clock function. Uses 20x4 LCD character display
+//  over I2C bus 1 using PCF8574-based LCD "backpack" with device address 0x27.
 
 var LCD = require('./lcdi2c.js');
 var sleep = require('sleep');

@@ -5,13 +5,21 @@ For use on a Raspberry Pi, lcdi2c is a node.js library for accessing LCD charact
 
 https://github.com/wilberforce/lcd-pcf8574
 
-lcdi2c supports 16x2 and 20x4 LCD character displays based on the Hitachi HD44780 LCD controller. lcdi2c uses the i2c-bus library ( https://github.com/fivdi/i2c-bus ) instead of the i2c library since the former supports more recent versions of node (e.g. 4.2.1). 
+lcdi2c supports 16x2 and 20x4 LCD character displays based on the Hitachi HD44780 LCD controller ( https://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller ). lcdi2c uses the i2c-bus library ( https://github.com/fivdi/i2c-bus ) instead of the i2c library since the former supports more recent versions of node (e.g. 4.2.1). 
 
 lcdi2c also provides new functions to facilitate output on a multiline character display based on the Hitachi HD44780 LCD controller. These include:
 
 println( string, line ): Sends output to a specified line. Automatically truncates output to number of columns specified on startup.
 
-Usage:    
+## Installation
+
+```bash
+npm install lcdi2c
+
+```
+
+
+## Usage 
 
 First, set up I2C on your Raspberry Pi. More information about this can be found here:
 
