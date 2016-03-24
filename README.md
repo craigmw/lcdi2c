@@ -64,7 +64,7 @@ Here, we see two devices, 0x27 (our LCD display) and 0x68 (a realtime clock boar
 To use lcdi2c, add the following code to your node.js application to set up the lcd object:
 
 ```bash
-var LCD = require('./lcdi2c.js');
+var LCD = require('lcdi2c');
 var lcd = new LCD( 1, 0x27, 20, 4 );
 
 ```
