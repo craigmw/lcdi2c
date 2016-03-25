@@ -41,11 +41,16 @@ var LCD = function (device, address, cols, rows ) {
 	this.address = address;
 	this.cols = cols;
 	this.rows = rows;
-	this.i2c = i2c.open( device, function(err) {
-		if (err) {
-		    console.log( 'Unable to open I2C port on device ' + device );	
+	this.error = null;
+	this.i2c = i2c.open( device, function( err ) {
+		if ( err ) {
+		    console.log( 'Unable to open I2C port on device ' + device + ' ERROR: ' + err );
+		    console.log( this );
+		    this.error = err;
+		    return this	
 		};
 	});
+	//console.log( 'Opened I2C port on bus ' + device + ' for LCD at address 0x' + address.toString( 16 ) + '.' );
 	this._sleep(1000);
 
 	this.write4( 0x33, displayPorts.CMD); //initialization
@@ -123,21 +128,34 @@ LCD.prototype._sleep = function (milli) {
 };
 
 LCD.prototype.write4 = function( x, c) {
-	function err() {};
-	var a = (x & 0xF0); // Use upper 4 bit nibble
-	this.i2c.sendByteSync(this.address, a | displayPorts.backlight | c );
-	this.i2c.sendByteSync(this.address, a | displayPorts.E | displayPorts.backlight | c);
-	this.i2c.sendByteSync(this.address, a | displayPorts.backlight | c );
-
+	try {
+	    var a = (x & 0xF0); // Use upper 4 bit nibble
+	    this.i2c.sendByteSync(this.address, a | displayPorts.backlight | c );
+	    this.i2c.sendByteSync(this.address, a | displayPorts.E | displayPorts.backlight | c);
+	    this.i2c.sendByteSync(this.address, a | displayPorts.backlight | c );
+	} catch ( err ) {
+        this.error = err;
+	};
+	
 	this._sleep(2);
 }
 
 LCD.prototype.write4Async = function( x, c) {
-	function err() {};
 	var a = (x & 0xF0); // Use upper 4 bit nibble
-	this.i2c.sendByte(this.address, 1, a | displayPorts.backlight | c, function(err1) {
-	    this.i2c.sendByte(this.address, 1, a | displayPorts.E | displayPorts.backlight | c, function(err1) {
-	        this.i2c.sendByte(this.address, 1, a | displayPorts.backlight | c, function(err1) {
+	this.i2c.sendByte(this.address, 1, a | displayPorts.backlight | c, function( err ) {
+		if ( err ) {
+			this.error = err;
+		};
+
+	    this.i2c.sendByte(this.address, 1, a | displayPorts.E | displayPorts.backlight | c, function( err ) {
+	    	if ( err ) {
+			    this.error = err;
+		    };
+
+	        this.i2c.sendByte(this.address, 1, a | displayPorts.backlight | c, function( err ) {
+       			if ( err ) {
+        			this.error = err;
+		        };
 	        });
 	    });
 	});

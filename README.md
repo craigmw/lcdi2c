@@ -114,4 +114,46 @@ More information about creating such custom characters can be found here:
 
 http://www.quinapalus.com/hd44780udg.html 
 
+## Error Checking
+
+i2clcd checks for errors and implements a simple try/catch method to catch errors sent by the I2C driver. Such errors will occur if the bus has not been set up properly, if the device ID is wrong, or if the device is not operational. To prevent crashes, it is recommended that error checking be implemented in the calling code.
+
+If an error is encountered, this will be stored in the variable lcd.error. The calling code should test lcd.error is null/false before calling the i2clcd routine again. Failure to check for such errors will result in a crash of the node.js application.
+
+Example code:
+
+```bash
+var LCD = require('lcdi2c');
+var lcd = new LCD( 1, 0x27, 20, 4 );
+
+lcd.println( 'This is line 1...', 1 );
+if ( lcd.error ) { 
+    lcdErrorHandler( lcd.error );
+} else {
+    lcd.println( 'This is line 2...', 2 );
+    if ( lcd.error ) {
+       lcdErrorHandler( lcd.error );
+    } else {
+        lcd.println( 'This is line 3...', 3 );
+        if ( lcd.error ) {
+            lcdErrorHandler( lcd.error );
+        } else {
+            lcd.println( 'This is line 4...', 4 );
+            if ( lcd.error ) {
+                lcdErrorHandler( lcd.error );
+            };
+        };
+    };   
+};   
+
+function lcdErrorHandler( err ) {
+    console.log( 'Unable to print to LCD display on bus 1 at address 0x27' );
+    //Disable further processing if application calls this recursively.
+};
+
+```
+
+This code is rather ugly, but it will prevent any calls to the underlying I2C driver from causing a program crash if the I2C bus or LCD display is not configured properly, or if the LCD is not plugged in. This recursive error checking will prevent the application from crashing even if the LCD device is unplugged during application processing. 
+
+A sample application called i2c_clock is provided in this library (and can be found in ../node_modules/lcdi2c) that provides an example of such error checking.
 

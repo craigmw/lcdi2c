@@ -14,16 +14,27 @@ lcd.clear();
 lcd.home();
 
 
-setInterval( function() {
+
+var int1 = setInterval( function() {
     now = new Date();
     var time1 = now.toTimeString();
     var date1 = now.toDateString();
-    
-    //console.log( date1 + '\t' + time1 );
-    //lcd.printlnBlock( date1, 1 );
-    //lcd.printlnBlock( time1, 2 );
-    lcd.println( date1, 1 );
-    lcd.println( time1, 2 );
 
+    //Print and check for errors. If errors found, shut down gently.
+    lcd.println( date1, 1 );
+    if ( lcd.error ) {
+        lcdError( lcd.error ); 
+    } else {
+        lcd.println( time1, 2 );
+        if ( lcd.error ) {
+            lcdError( lcd.error ); 
+        };
+    }; 
 }, 500 );
 lcd.off;
+
+function lcdError( err ) {
+    clearInterval( int1 );
+	console.log( 'Unable to print to LCD on bus 1 at address 0x27. Error: ' + JSON.stringify( err ) );
+
+};
