@@ -219,7 +219,8 @@ LCD.prototype.println = function ( str, line ) {
 
 		//Set cursor to correct line.
 		if ( line > 0 && line <= this.rows ) {
-            this.write( LCD.LINEADDRESS[line], displayPorts.CMD );
+			this.write( LCD.LINEADDRESS[line], displayPorts.CMD );
+			this._sleep(2);
 		};
 
 		this.print( str.substring(0, this.cols ) );
