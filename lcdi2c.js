@@ -53,27 +53,7 @@ var LCD = function (device, address, cols, rows ) {
 	//console.log( 'Opened I2C port on bus ' + device + ' for LCD at address 0x' + address.toString( 16 ) + '.' );
 	this._sleep(1000);
 
-	this.write4( 0x33, displayPorts.CMD); //initialization
-	this._sleep(200);
-	this.write4(0x32, displayPorts.CMD); //initialization
-	this._sleep(100);
-	this.write4( 0x06, displayPorts.CMD); //initialization
-	this._sleep(100);
-	this.write4( 0x28, displayPorts.CMD); //initialization
-	this._sleep(100);
-	this.write4( 0x01, displayPorts.CMD); //initialization
-	this._sleep(100);
-
-
-	this.write4(LCD.FUNCTIONSET | LCD._4BITMODE | LCD._2LINE | LCD._5x10DOTS, displayPorts.CMD); //4 bit - 2 line 5x7 matrix
-	
-	this._sleep(10);
-	this.write( LCD.DISPLAYCONTROL | LCD.DISPLAYON, displayPorts.CMD); //turn cursor off 0x0E to enable cursor
-	this._sleep(10);
-	this.write( LCD.ENTRYMODESET | LCD.ENTRYLEFT, displayPorts.CMD); //shift cursor right
-	this._sleep(10);
-	this.write( LCD.CLEARDISPLAY, displayPorts.CMD); // LCD clear
-	this.write( displayPorts.backlight, displayPorts.CHR ); //Turn on backlight.
+	this.init();
 	
 	return this;
 };
@@ -122,6 +102,30 @@ LCD.LINEADDRESS[1] = 0x80;
 LCD.LINEADDRESS[2] = 0xC0;
 LCD.LINEADDRESS[3] = 0x94;
 LCD.LINEADDRESS[4] = 0xD4;
+
+LCD.prototype.init = function (){
+	this.write4( 0x33, displayPorts.CMD); //initialization
+	this._sleep(200);
+	this.write4(0x32, displayPorts.CMD); //initialization
+	this._sleep(100);
+	this.write4( 0x06, displayPorts.CMD); //initialization
+	this._sleep(100);
+	this.write4( 0x28, displayPorts.CMD); //initialization
+	this._sleep(100);
+	this.write4( 0x01, displayPorts.CMD); //initialization
+	this._sleep(100);
+
+
+	this.write4(LCD.FUNCTIONSET | LCD._4BITMODE | LCD._2LINE | LCD._5x10DOTS, displayPorts.CMD); //4 bit - 2 line 5x7 matrix
+	
+	this._sleep(10);
+	this.write( LCD.DISPLAYCONTROL | LCD.DISPLAYON, displayPorts.CMD); //turn cursor off 0x0E to enable cursor
+	this._sleep(10);
+	this.write( LCD.ENTRYMODESET | LCD.ENTRYLEFT, displayPorts.CMD); //shift cursor right
+	this._sleep(10);
+	this.write( LCD.CLEARDISPLAY, displayPorts.CMD); // LCD clear
+	this.write( displayPorts.backlight, displayPorts.CHR ); //Turn on backlight.
+}
 
 LCD.prototype._sleep = function (milli) {
 	sleep.usleep(milli * 1000);
