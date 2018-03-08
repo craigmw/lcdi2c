@@ -1,13 +1,14 @@
-//lcdi2c.js - Add I2C LCD character display using PCF8574 I2C port expander.
-// https://github.com/wilberforce/lcd-pcf8574 but replaced calls to i2c library with
-// calls to i2c-bus. Currently, only works in synchronous output mode. Asynch mode does not work.
-// LCD i2c interface via PCF8574P
-// http://dx.com/p/lcd1602-adapter-board-w-iic-i2c-interface-black-works-with-official-arduino-boards-216865
+/**
+ * lcdi2c.js - Add I2C LCD character display using PCF8574 I2C port expander.
+ * https://github.com/wilberforce/lcd-pcf8574 but replaced calls to i2c library with
+ * calls to i2c-bus. Currently, only works in synchronous output mode. Asynch mode does not work.
+ * LCD i2c interface via PCF8574P
+ * http://dx.com/p/lcd1602-adapter-board-w-iic-i2c-interface-black-works-with-official-arduino-boards-216865
 
-// https://gist.github.com/chrisnew/6725633
-// http://www.espruino.com/HD44780
-// http://www.espruino.com/LCD1602
-
+ * https://gist.github.com/chrisnew/6725633
+ * http://www.espruino.com/HD44780
+ * http://www.espruino.com/LCD1602
+ */
 const i2c = require('i2c-bus');
 const sleep = require('sleep');
 
@@ -78,10 +79,10 @@ let LCD = class LCD {
         this.error = null;
         this.i2c = null;
 
-        this.init();
+        this._init();
     };
 
-    init() {
+    _init() {
         this.i2c = i2c.open(this.device, function (err) {
             if (err) {
                 console.log('Unable to open I2C port on device ' + device + ' ERROR: ' + err);
@@ -89,7 +90,6 @@ let LCD = class LCD {
                 this.error = err;
                 return this
             }
-            ;
         });
 
         this._sleep(1000);
@@ -118,7 +118,7 @@ let LCD = class LCD {
         return this;
     };
 
-    static _sleep(milli) {
+    _sleep(milli) {
         sleep.usleep(milli * 1000);
     };
 
@@ -136,22 +136,29 @@ let LCD = class LCD {
 
     write4Async(x, c) {
         let a = (x & 0xF0); // Use upper 4 bit nibble
-        this.i2c.sendByte(this.address, 1, a | this.displayPorts.backlight | c, (err) => {
+        this.i2c.sendByte(this.address, a | this.displayPorts.backlight | c, (err) => {
             if (err) {
                 this.error = err;
             }
-            this.i2c.sendByte(this.address, 1, a | this.displayPorts.E | this.displayPorts.backlight | c, (err) => {
-                if (err) {
-                    this.error = err;
-                }
-                this.i2c.sendByte(this.address, 1, a | this.displayPorts.backlight | c, (err) => {
-                    if (err) {
-                        this.error = err;
-                    }
-                });
-            });
         });
-        this._sleep(2);
+        this.i2c.sendByte(this.address, a | this.displayPorts.E | this.displayPorts.backlight | c, (err) => {
+            if (err) {
+                this.error = err;
+            }
+        });
+        this.i2c.sendByte(this.address, a | this.displayPorts.backlight | c, (err) => {
+            if (err) {
+                this.error = err;
+            }
+        });
+
+        //Had to add this as it fixes a weird bug where the display was showing garbled text after a few minutes
+        //Found this solution by accident though...
+        this.i2c.sendByte(this.address, a | this.displayPorts.backlight | c, (err) => {
+            if (err) {
+                this.error = err;
+            }
+        });
     };
 
     write4Block(x, c) {
@@ -202,7 +209,7 @@ let LCD = class LCD {
             for (let i = 0; i < str.length; i++) {
                 let c = str[i].charCodeAt(0);
                 this.writeAsync(c, this.displayPorts.CHR);
-                this._sleep(2);
+                //this._sleep(2);
             }
         }
         return this;
@@ -238,6 +245,7 @@ let LCD = class LCD {
             this.printAsync(str.substring(0, this.cols));
         }
         return this;
+
     };
 
     printlnBlock(str, line) {
